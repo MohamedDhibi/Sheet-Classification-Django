@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Image Upload{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    {% load static %}
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    <style>
+        body {
+            position: relative;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute; /* Changed to absolute to allow scrolling */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{% static "images/background.jpg" %}') no-repeat center center;
+            background-size: cover; /* Ensures the background image covers the entire screen */
+            background-blend-mode: overlay;
+            background-color: rgba(252, 252, 252, 0.7); /* Increase the overlay intensity */
+            z-index: -1; /* Keeps the pseudo-element behind the content */
+            
+            animation: zoomBackground 20s infinite alternate ease-in-out; /* Add animation for zoom */
+            pointer-events: none; /* Prevents interaction with the pseudo-element */
+        }
+
+        @keyframes zoomBackground {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.2);
+            }
+        }
+
+
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .sidebar-left,
+    .sidebar-right {
+        width: 200px;
+        background-color: #000;
+        color: #fff;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        overflow: auto;
+        padding: 18px;
+        box-shadow: 
+            -7px 0 7px rgba(0, 0, 0, 0.5), /* Left shadow */
+            7px 0 7px rgba(0, 0, 0, 0.5); /* Right shadow */
+
+    }
+    .pekutherm {    
+
+        position: fixed;
+        top: 10PX;
+        right: 50px;
+        width: 120px; /* Adjust size as needed */
+        height: 60px; /* Adjust size as needed */
+        background-image: url('/static/images/pekutherm.png'); /* Path to your sprite sheet or image */
+        background-size: cover;
+
+    }
+
+
+
+    .sidebar-left {
+        left: 20px;
+    }
+
+    .sidebar-right {
+        right: 20px;
+    }
+    header {
+        background: #000000;
+        color: #fff;
+        padding: 20px 0;
+        position: relative;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    /* Base styles for the logo */
+    header img.logo {
+        position: absolute;
+        top: 50%;
+        right: 40px;
+        transform: translateY(-50%);
+        max-height: 100px;
+        width: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    /* Styles for the logo on hover */
+    header img.logo:hover {
+        transform: translateY(-50%) scale(1.1); /* Scales the logo up */
+        /* Adds padding to create a background around the logo */
+        box-shadow: 0 4px 8px rgb(255, 255, 255);
+    }
+
+
+
+    form {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="file"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .alert {
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .alert.success {
+        background: #d4edda;
+        color: #155724;
+    }
+    .alert.error {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    h2 {
+        font-weight: bold;
+        margin-top: 20px;
+        font-size: 20px;
+    }
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+    ul li {
+        background: #fff;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+    }
+    ul li:hover {
+        
+        color: #fff;
+        background: #000000;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+    }
+    .image-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .image-info img {
+        max-width: 150px;
+        max-height: 150px;
+        margin-right: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .info-box {
+        flex: 1;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .info-box p {
+        margin: 0;
+        padding: 5px 0;
+    }
+    .info-box p strong {
+        display: inline-block;
+        width: 120px;
+        color: #333;
+    }
+        /* Modern Form Styling */
+    /* Modern Form Styling */
+    .modern-form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .drop-area {
+        border: 2px dashed #1c1f23;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        background-color: #f8f9fa;
+        color: #080b0d;
+        cursor: pointer;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .drop-area:hover {
+        background-color: #e9ecef;
+    }
+
+    .drop-area p {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    #file-input {
+        display: none;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input[type="text"]:focus {
+        border-color: #141618;
+        outline: none;
+    }
+
+    .submit-button {
+        background-color: #07090b;
+        color: #ffffff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .submit-button:hover {
+        background-color: #777a7e;
+    }
+
+    .submit-button:focus {
+        outline: none;
+    }
+
+    .admin-button {
+    position: fixed;
+    top: 20px;
+    left: 30px;
+    padding: 12px 24px;
+    background: #000000; /* White background on hover */
+    color: #ffffff; /* Dark gray text on hover */
+    width: 174px; /* Set a fixed width */
+    border: 2px solid #000000; /* Dark gray border */
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold; /* Make text bold */
+    cursor: pointer;
+    z-index: 1000; /* Ensures the button is above other content */
+    text-decoration: none;
+    text-align: center;
+    line-height: 1.5;
+    transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgb(0, 0, 0);
+    }
+
+    .admin-button:hover {
+        background: #000000; /* Dark gray background */
+        color: #fff; /* White text */
+        font-weight: bold; /* Make text bold */
+        border: 2px solid #333; /* Maintain border color */
+        box-shadow: 0 6px 12px rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .admin-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .button-login {
+    top: 20px; /* Position for Login button */
+    }
+
+    .button-upload {
+        top: 90px; /* Position for Upload button, adjust as needed */
+    }
+
+    .button-home {
+        top: 160px; /* Position for Home button, adjust as needed */
+    }
+
+
+
+
+    /* Style for the chat icon */
+    .chat-icon {
+        position: fixed;
+        bottom: 10px;
+        right: 35px;
+        width: 50px; /* Initial size of the icon */
+        height: 50px; /* Initial size of the icon */
+        cursor: pointer;
+        z-index: 1000;
+        transition: transform 0.3s ease; /* Smooth transition for the transformation */
+    }
+
+    .chat-icon img {
+        width: 100%; /* Ensure the image fills the container */
+        height: 100%; /* Ensure the image fills the container */
+        object-fit: cover; /* Adjust the image to cover the container */
+    }
+
+    /* Hover effect */
+    .chat-icon:hover {
+        transform: scale(1.2); /* Scale up the icon to 120% of its original size */
+    }
+
+
+
+    /* Style for the chat window */
+    .chat-window {
+        position: fixed;
+        bottom:60px; /* Position it above the chat icon */
+        right: 70px;
+        width: 300px;
+        height: 350px;
+        background-color: #ffffff;
+        border: 2px solid #333;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: none; /* Hidden initially */
+        flex-direction: column;
+        z-index: 1000;
+        transform: scale(0.8);
+        opacity: 0;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    /* Pop-up animation */
+    .chat-window.show {
+        display: flex; /* Ensure it's displayed when active */
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    /* Header of the chat window */
+    .chat-header {
+        background-color: #222121;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        position: relative;
+    }
+
+    /* Close button in the header */
+    .chat-header .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        font-size: 18px;
+        color: #fff;
+        cursor: pointer;
+        background: none;
+        border: none;
+        outline: none;
+    }
+
+    /* Input area of the chat window */
+    .chat-input {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .chat-input button {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+    /* Chat content area */
+    /* Chat content container */
+    /* Chat content container */
+    .chat-content {
+        padding: 10px;
+        height: calc(100% - 60px); /* Adjust height to fit the window */
+        overflow-y: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column; /* Ensure messages stack vertically */
+        gap: 10px; /* Optional: Add space between messages */
+    }
+
+
+
+    /* Individual messages */
+    .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 80%;
+        display: flex;
+        align-items: center;
+        word-wrap: break-word; /* Ensure long words break to avoid overflow */
+    }
+
+    /* User messages (right-aligned) */
+    .user-message {
+        background-color: #ebebeb;
+        align-self: flex-end; /* Aligns message to the right */
+        margin-left: auto; /* Pushes message to the end of the flex container */
+        border-bottom-right-radius: 0; /* Remove bottom-left curve */
+    }
+
+    /* Bot messages (left-aligned) */
+    .bot-message {
+        background-color: #a1a1a1b2;
+        align-self: flex-start; /* Aligns message to the left */
+        margin-right: auto; /* Pushes message to the start of the flex container */
+        border-bottom-left-radius: 0; /* Remove bottom-right curve */
+    }
+
+
+    </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+    
+        dropArea.addEventListener('click', () => fileInput.click());
+    
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('dragging');
+        });
+    
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragging');
+        });
+    
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('dragging');
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+        });
+    
+        fileInput.addEventListener('change', () => {
+            const files = fileInput.files;
+            handleFiles(files);
+        });
+    
+        function handleFiles(files) {
+            if (files.length > 0) {
+                // Optionally, you can add a preview or further processing here
+                dropArea.querySelector('p').textContent = `${files.length} file(s) selected`;
+            }
+        }
+    });
+    </script>
+     <div class="sidebar-left">
+        <img src="{% static 'images/pillars.jpg' %}"  style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; object-fit: cover; transform: translate(-50%, -50%);">
+        <!-- Left sidebar content, if any -->
+        <p></p>
+    </div>
+
+    <div class="sidebar-right">
+        <img src="{% static 'images/pillars.jpg' %}"  style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; object-fit: cover; transform: translate(-50%, -50%);">
+        <!-- Right sidebar content, if any -->
+        <p></p>
+    </div>
+
+    <a href="{% url 'admin:index' %}" class="admin-button button-login">Login</a>
+    <a href="{% url 'upload' %}" class="admin-button button-upload">Upload</a>
+    <a href="{% url 'home' %}" class="admin-button button-home">Home</a>
+    
+
+
+
+    <div class="bot"></div>
+    <div class="pekutherm"></div>
+
+
+    
+    <!-- Chat icon -->
+    <div class="chat-icon" onclick="toggleChat()">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfg4c6yBBZX9Gf0j-5cxNNaP6rdiVUy5q9jMoRTKECnqJ3eH_uADj7W_Q87gR6PZvMhXg&usqp=CAU" />
+    </div>
+
+    <!-- Chat window -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            Akari
+            <span class="close-btn" onclick="toggleChat()">×</span>
+        </div>
+        <div class="chat-content" id="chatContent"></div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            var chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('show');
+        }
+
+        function sendMessage() {
+            var inputField = document.getElementById('chatInput');
+            var chatContent = document.getElementById('chatContent');
+            var userMessage = inputField.value;
+
+            if (userMessage.trim()) {
+                // Display user message
+                var userBubble = document.createElement('div');
+                userBubble.classList.add('message', 'user-message');
+                userBubble.textContent = userMessage;
+                chatContent.appendChild(userBubble);
+
+                // Clear input field
+                inputField.value = '';
+
+                // Call Wit.ai API for processing the message
+                getGptResponse(userMessage)
+                    .then(response => {
+                        var botBubble = document.createElement('div');
+                        botBubble.classList.add('message', 'bot-message');
+                        botBubble.textContent = response;
+                        chatContent.appendChild(botBubble);
+                        chatContent.scrollTop = chatContent.scrollHeight; // Scroll to the bottom
+                    })
+                    .catch(error => {
+                        var errorBubble = document.createElement('div');
+                        errorBubble.classList.add('message', 'bot-message');
+                        errorBubble.textContent = "Error: " + error.message;
+                        chatContent.appendChild(errorBubble);
+                        chatContent.scrollTop = chatContent.scrollHeight; // Scroll to the bottom
+                    });
+            }
+        }
+
+        function getGptResponse(message) {
+            return fetch(`https://api.wit.ai/message?v=20240813&q=${encodeURIComponent(message)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer E4IX7V3QJZEZQOJGCWDQMUHCSECCOYZS'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Check if there are any intents or entities, or if a default message can be crafted
+                if (data.intents && data.intents.length > 0) {
+                    // Handle based on top intent
+                    return `I understood this as intent: ${data.intents[0].name}`;
+                } else if (data.text) {
+                    // Respond with Wit.ai's interpreted text
+                    return data.text;
+                } else {
+                    // Fallback message
+                    return "I'm not developed enough to understand this message.";
+                }
+            });
+        }
+
+    </script>
+
+
+    {% block sidebar %}<!-- Default sidebar content -->{% endblock %}
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
